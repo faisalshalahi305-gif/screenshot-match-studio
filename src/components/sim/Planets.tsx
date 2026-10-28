@@ -1,0 +1,111 @@
+// Solar-system planets: positions come from the gravity simulation (Sim.planets).
+import { useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import { S, PLANET_ORBITS, type Sim } from "./sim-state";
+
+type P = { name: string; au: number; r: number; colors: string[]; bands?: boolean; ring?: [number, number, string]; tilt?: number; phase: number };
+
+// Radii exaggerated so every planet is clearly visible on a phone screen.
+const PLANETS: P[] = [
+  { name: "mercury", au: 0.39, r: 0.95, colors: ["#8c8379", "#b5aa9c", "#6e665e"], phase: 1.2 },
+  { name: "venus", au: 0.72, r: 1.5, colors: ["#e8c98a", "#d9b06a", "#f3dcaa"], phase: 3.9 },
+  { name: "mars", au: 1.52, r: 1.2, colors: ["#c1440e", "#a0380f", "#d9693a"], phase: 0.6 },
+  { name: "jupiter", au: 5.2, r: 3.6, colors: ["#d8b48a", "#a8754e", "#efe0c8", "#b98a62"], bands: true, phase: 2.4 },
+  { name: "saturn", au: 9.58, r: 3.1, colors: ["#e3cf9c", "#c9ae74", "#f1e3bd"], bands: true, ring: [1.45, 2.5, "#e0cba0"], tilt: 0.47, phase: 5.1 },
+  { name: "uranus", au: 19.2, r: 2.3, colors: ["#9fe3ea", "#86d0da", "#b8eef2"], ring: [1.4, 1.75, "#c7eff4"], tilt: 1.7, phase: 4.2 },
+  { name: "neptune", au: 30.05, r: 2.2, colors: ["#3f66d8", "#2c4fb8", "#5a80e6"], bands: true, phase: 0.2 },
+];
+
+// Orbit distances compressed (power 0.4) so the outer planets sit near enough to see,
+// while Earth (au = 1) still lands exactly on its physics orbit at S units.
+// Mercury and Venus stay inside Earth's orbit, Mars outside it, as in reality.
+export const orbitR = (au: number) => S * Math.pow(au, 0.4);
+// Distance from the Sun that frames the whole planetary system (Neptune + margin).
+export const PLANET_SPAN = orbitR(30.05) * 1.15;
+// Distance from the Sun that frames the inner planets (Mercury -> Mars + margin).
+export const INNER_SPAN = orbitR(1.52) * 1.4;
+
+function makeTex(colors: string[], bands?: boolean) {
+  const c = document.createElement("canvas");
+  c.width = 512; c.height = 256;
+  const g = c.getContext("2d")!;
+  g.fillStyle = colors[0]!; g.fillRect(0, 0, 512, 256);
+  if (bands) {
+    for (let y = 0; y < 256; y += 4 + Math.random() * 10) {
+      g.fillStyle = colors[Math.floor(Math.random() * colors.length)]!;
+      g.globalAlpha = 0.5 + Math.random() * 0.5;
+      g.fillRect(0, y, 512, 3 + Math.random() * 12);
+    }
+  } else {
+    for (let i = 0; i < 900; i++) {
+      g.fillStyle = colors[Math.floor(Math.random() * colors.length)]!;
+      g.globalAlpha = 0.25 + Math.random() * 0.4;
+      g.beginPath();
+      g.arc(Math.random() * 512, Math.random() * 256, 2 + Math.random() * 14, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+function Planet({ p, sim, rings }: { p: P; sim: Sim; rings: boolean }) {
+  const grp = useRef<THREE.Group>(null);
+  const body = useRef<THREE.Mesh>(null);
+  const tex = useMemo(() => makeTex(p.colors, p.bands), [p]);
+  const R = orbitR(p.au);
+  const line = Math.max(0.05, R * 0.006);
+  const idx = PLANET_ORBITS.findIndex((o) => o.name === p.name);
+  useFrame((_, d) => {
+    const dt = Math.min(d, 0.05);
+    const b = sim.planets[idx];
+    if (grp.current && b) {
+      // Real physical distance, displayed with the same compressed scale as the orbit rings.
+      const r = Math.hypot(b.x, b.y);
+      const dr = orbitR(Math.max(r, 1e-4));
+      grp.current.position.set((b.x / r) * dr, 0, -(b.y / r) * dr);
+      grp.current.visible = !sim.planetDead[idx];
+    }
+    if (body.current) body.current.rotation.y += dt * 0.6;
+  });
+  return (
+    <>
+      {rings && <mesh rotation-x={-Math.PI / 2}>
+        <ringGeometry args={[R - line, R + line, 256]} />
+        <meshBasicMaterial color="#7fd4ff" transparent opacity={0.75} side={THREE.DoubleSide} depthWrite={false} toneMapped={false} />
+      </mesh>}
+      <group ref={grp}>
+        <group rotation-z={p.tilt ?? 0.1}>
+          <mesh ref={body}>
+            <sphereGeometry args={[p.r, 32, 24]} />
+            <meshStandardMaterial
+              map={tex}
+              roughness={0.85}
+              metalness={0}
+              emissive={new THREE.Color(p.colors[0]!)}
+              emissiveIntensity={0.28}
+              emissiveMap={tex}
+            />
+          </mesh>
+          {p.ring && (
+            <mesh rotation-x={-Math.PI / 2}>
+              <ringGeometry args={[p.r * p.ring[0], p.r * p.ring[1], 128]} />
+              <meshStandardMaterial color={p.ring[2]} transparent opacity={0.85} side={THREE.DoubleSide} roughness={1} emissive={p.ring[2]} emissiveIntensity={0.18} />
+            </mesh>
+          )}
+        </group>
+      </group>
+    </>
+  );
+}
+
+export function Planets({ sim, rings = true }: { sim: Sim; rings?: boolean }) {
+  return (
+    <>
+      {PLANETS.map((p) => <Planet key={p.name} p={p} sim={sim} rings={rings} />)}
+    </>
+  );
+}
