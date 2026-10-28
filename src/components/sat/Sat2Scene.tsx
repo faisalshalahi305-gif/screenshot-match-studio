@@ -29,6 +29,12 @@ function CameraRig({ controls }) {
         else if (m === "edge") { P.set(46, 0, 3); T.set(0, 0, 0); }
         else if (m === "tower") { P.set(3.2, 8.2, 3.5); T.set(0, 6.6, 0); }
         else if (m === "earth") { P.set(10, 4, 12); T.set(0, 0, 0); }
+        else if (m === "back") { P.set(0, 6, -40); T.set(0, 2, 0); }
+        else if (m === "below") { P.set(0, -40, -6); T.set(0, 0, 0); }
+        else if (m === "corner") { P.set(32, 26, 32); T.set(0, 0, 0); }
+        else if (m === "horizon") { P.set(5.5, 6.9, 2.2); T.set(-4, 6.4, 0); }
+        else if (m === "left") { P.set(-46, 4, 6); T.set(0, 0, 0); }
+        else if (m === "deep") { P.set(0, 30, 320); T.set(0, 0, 0); }
         else { P.set(0, 6, 40); T.set(0, 2, 0); }
       } else {
         const m = s.cam2;
@@ -36,6 +42,11 @@ function CameraRig({ controls }) {
         else if (m === "sun") { P.set(X + 6, 8, 10); T.set(X, 0, 1); }
         else if (m === "side") { P.set(X, -70, 6); T.set(X, 0, 2); }
         else if (m === "star") { P.set(X - 52, 3, 2); T.set(X, 0, 1); }
+        else if (m === "behindEarth") { P.set(X + 56, 5, -3); T.set(X, 0, 1); }
+        else if (m === "below") { P.set(X, -45, -30); T.set(X, 0, 0); }
+        else if (m === "corner") { P.set(X + 42, 30, 42); T.set(X, 0, 0); }
+        else if (m === "grid") { P.set(X + 30, -1, 32); T.set(X, -4, 0); }
+        else if (m === "far") { P.set(X, 150, 110); T.set(X, 0, 0); }
         else { P.set(X, 62, 34); T.set(X, -2, 3); }
       }
     }
@@ -47,6 +58,7 @@ function CameraRig({ controls }) {
       camera.position.lerp(want, k); c.target.lerp(p, k); c.update();
       return;
     }
+    if (s.freeCam) return;
     if (goal.current.t < 1) {
       goal.current.t = Math.min(1, goal.current.t + dt / 1.8);
       const k = 1 - Math.exp(-5 * dt) + (goal.current.t >= 1 ? 1 : 0);
@@ -306,7 +318,7 @@ export default function Sat2Scene({ version }) {
         <Satellite />
         <LightScene key={version} />
       </Suspense>
-      <OrbitControls ref={controls} enableDamping dampingFactor={0.08} minDistance={2} maxDistance={600} />
+      <OrbitControls ref={controls} enablePan screenSpacePanning rotateSpeed={0.8} enableDamping dampingFactor={0.08} minDistance={2} maxDistance={600} />
       <CameraRig controls={controls} />
       <EffectComposer>
         <Bloom intensity={0.9} luminanceThreshold={0.75} luminanceSmoothing={0.2} mipmapBlur />
