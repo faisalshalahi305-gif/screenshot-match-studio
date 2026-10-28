@@ -15,15 +15,15 @@ const TRAIL_MAX = 6000;
 /* ---------------- Camera rig: fixed views + smooth cinematic flights ---------------- */
 function CameraRig({ controls }) {
   const { camera } = useThree();
-  const goal = useRef({ pos: new THREE.Vector3(0, 7, 30), tgt: new THREE.Vector3(0, 2, 0), t: 1, key: -1 });
+  const goal = useRef({ pos: new THREE.Vector3(0, 6, 40), tgt: new THREE.Vector3(0, 2, 0), t: 1, key: -1 });
   useFrame((_, dt) => {
     const c = controls.current; if (!c) return;
     const s = S2;
     if (goal.current.key !== s.camKey) {
       goal.current.key = s.camKey; goal.current.t = 0;
-      if (s.section === 1) { goal.current.pos.set(0, 7, 30); goal.current.tgt.set(0, 2, 0); }
-      else if (s.cam2 === "scope") { goal.current.pos.set(LIGHT_O.x + 47.5, 0.5, 0); goal.current.tgt.set(LIGHT_O.x - 10, 0, 2.5); }
-      else { goal.current.pos.set(LIGHT_O.x + 6, 42, 58); goal.current.tgt.set(LIGHT_O.x, -2, 0); }
+      if (s.section === 1) { goal.current.pos.set(0, 6, 40); goal.current.tgt.set(0, 2, 0); }
+      else if (s.cam2 === "scope") { goal.current.pos.set(LIGHT_O.x + 43.2, 0.35, 0); goal.current.tgt.set(LIGHT_O.x, 0, 1.5); }
+      else { goal.current.pos.set(LIGHT_O.x, 62, 34); goal.current.tgt.set(LIGHT_O.x, -2, 3); }
     }
     if (s.section === 1 && s.follow && s.body) {
       const p = new THREE.Vector3(s.body.x * KM, s.body.y * KM, 0);
@@ -54,7 +54,7 @@ function Earth() {
     <group>
       <mesh ref={e}><sphereGeometry args={[RE, 96, 96]} /><meshStandardMaterial map={day} roughness={0.85} metalness={0} /></mesh>
       <mesh ref={c}><sphereGeometry args={[RE * 1.008, 64, 64]} /><meshStandardMaterial map={clouds} transparent opacity={0.45} depthWrite={false} /></mesh>
-      <mesh><sphereGeometry args={[RE * 1.06, 64, 64]} /><meshBasicMaterial color="#5ab8ff" transparent opacity={0.12} side={THREE.BackSide} blending={THREE.AdditiveBlending} depthWrite={false} /></mesh>
+      <mesh><sphereGeometry args={[RE * 1.025, 64, 64]} /><meshBasicMaterial color="#5ab8ff" transparent opacity={0.07} side={THREE.BackSide} blending={THREE.AdditiveBlending} depthWrite={false} /></mesh>
     </group>
   );
 }
@@ -280,7 +280,7 @@ function Paths() {
 export default function Sat2Scene({ version }) {
   const controls = useRef();
   return (
-    <Canvas camera={{ position: [0, 7, 30], fov: 50, near: 0.05, far: 4000 }} dpr={[1, 2]} gl={{ antialias: true }}
+    <Canvas camera={{ position: [0, 6, 40], fov: 50, near: 0.05, far: 4000 }} dpr={[1, 2]} gl={{ antialias: true }}
       onCreated={({ gl }) => { gl.domElement.parentElement?.setAttribute("data-scene-ready", "1"); }}>
       <color attach="background" args={["#02030a"]} />
       <Stars radius={900} depth={200} count={7000} factor={7} saturation={0.15} fade speed={0.4} />
