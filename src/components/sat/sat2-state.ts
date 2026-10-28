@@ -23,7 +23,8 @@ export const S2 = {
   showVec: true,
   showTrail: true,
   follow: false,
-  cam1: "front" as "front" | "far" | "tilt" | "edge" | "tower" | "earth",
+  cam1: "front" as "front" | "far" | "tilt" | "edge" | "tower" | "earth" | "back" | "below" | "corner" | "horizon" | "left" | "deep",
+  freeCam: false,
   // section 2
   lightModel: "einstein" as "newton" | "einstein",
   showPos: false,
@@ -32,7 +33,7 @@ export const S2 = {
   sunMass: 1,
   eclipse: false,
   eclipseT: 0,
-  cam2: "space" as "space" | "scope" | "sun" | "side" | "star",
+  cam2: "space" as "space" | "scope" | "sun" | "side" | "star" | "behindEarth" | "below" | "corner" | "grid" | "far",
 };
 
 /**

@@ -35,7 +35,7 @@ function SatellitePage() {
   const preset = (p: Preset) => { s.v = presetSpeed(p, s.h, s.massX); fire(); };
   const playPause = () => { if (!s.body) fire(); else { s.running = !s.running; rerender(); } };
   const switchTo = (n: 1 | 2) => { s.section = n; s.follow = false; s.camKey++; bump2(); };
-  const cam2 = (c: typeof S2.cam2) => { s.cam2 = c; s.camKey++; rerender(); };
+  const cam2 = (c: typeof S2.cam2) => { s.cam2 = c; s.freeCam = false; s.camKey++; rerender(); };
 
   // telemetry
   const b = s.body;
@@ -52,7 +52,7 @@ function SatellitePage() {
 
   const [open, setOpen] = useState<"fate" | "cam" | "stats" | "lines" | null>(null);
   const [last, setLast] = useState<Preset | null>(null);
-  const cam1 = (c: typeof s.cam1) => { s.cam1 = c; s.follow = false; s.camKey++; rerender(); };
+  const cam1 = (c: typeof s.cam1) => { s.cam1 = c; s.follow = false; s.freeCam = false; s.camKey++; rerender(); };
   const pickPreset = (p: Preset) => { setLast(p); preset(p); };
 
   return (
@@ -126,14 +126,15 @@ function SatellitePage() {
             <div className="flex flex-col gap-0.5">
               {s.section === 1 ? (
                 <>
-                  {([["front", "المشهد العام"], ["far", "من بعيد"], ["tilt", "منظور مائل"], ["edge", "من الجانب"], ["tower", "فوق البرج"], ["earth", "قرب الأرض"]] as [typeof s.cam1, string][]).map(([m, l]) => (
-                    <button key={m} onClick={() => cam1(m)} className={`rounded-full px-3 py-1 text-[11px] transition ${!s.follow && s.cam1 === m ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>{l}</button>
+                  {([["front", "المشهد العام"], ["far", "من بعيد"], ["tilt", "منظور مائل"], ["edge", "من الجانب"], ["tower", "فوق البرج"], ["earth", "قرب الأرض"], ["back", "من الخلف"], ["left", "الجانب الآخر"], ["below", "من الأسفل"], ["corner", "زاوية علوية"], ["horizon", "أفق البرج"], ["deep", "الفضاء العميق"]] as [typeof s.cam1, string][]).map(([m, l]) => (
+                    <button key={m} onClick={() => cam1(m)} className={`rounded-full px-3 py-1 text-[11px] transition ${!s.follow && !s.freeCam && s.cam1 === m ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>{l}</button>
                   ))}
                   <button onClick={() => { s.follow = !s.follow; if (!s.follow) s.camKey++; rerender(); }} className={`rounded-full px-3 py-1 text-[11px] transition ${s.follow ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>تتبع القمر</button>
+                  <button onClick={() => { s.freeCam = !s.freeCam; s.follow = false; rerender(); }} className={`rounded-full px-3 py-1 text-[11px] transition ${s.freeCam ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>تحكم حر 360°</button>
                 </>
               ) : (
-                ([["space", "مشهد علوي واسع"], ["side", "من الجانب"], ["sun", "قرب الشمس"], ["star", "من خلف النجم"], ["scope", "تلسكوب الأرض"]] as [typeof s.cam2, string][]).map(([m, l]) => (
-                  <button key={m} onClick={() => cam2(m)} className={`rounded-full px-3 py-1 text-[11px] transition ${s.cam2 === m ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>{l}</button>
+                ([["space", "مشهد علوي واسع"], ["side", "من الجانب"], ["sun", "قرب الشمس"], ["star", "من خلف النجم"], ["scope", "تلسكوب الأرض"], ["behindEarth", "خلف الأرض"], ["below", "من الأسفل"], ["corner", "زاوية علوية"], ["grid", "مستوى الشبكة"], ["far", "من بعيد جدًا"]] as [typeof s.cam2, string][]).map(([m, l]) => (
+                  <button key={m} onClick={() => cam2(m)} className={`rounded-full px-3 py-1 text-[11px] transition ${!s.freeCam && s.cam2 === m ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>{l}</button>
                 ))
               )}
             </div>
