@@ -891,7 +891,8 @@ function Lesson() {
           <button onClick={() => setMode({ del: !mode.del })} aria-label="إدارة العناصر"
             className={`absolute left-4 top-4 rounded-full border border-border px-4 py-1 text-xl ${mode.del ? "bg-primary text-primary-foreground" : "bg-card/70"}`}>…</button>
           <button onClick={saveNow} className={`absolute right-4 top-4 rounded-full border border-border px-4 py-1 text-base font-bold ${saved ? "bg-success text-success-foreground" : "bg-card/70"}`}>{saved ? "✓ تم الحفظ" : "💾 حفظ"}</button>
-          <Link to="/simulation" className="absolute left-20 top-4 rounded-full border border-border bg-card/70 px-4 py-1 text-base font-bold">🪐 محاكاة النظام 3D</Link></>}
+          <Link to="/simulation" className="absolute left-20 top-4 rounded-full border border-border bg-card/70 px-4 py-1 text-base font-bold">🪐 محاكاة النظام 3D</Link>
+          <Link to="/satellite" className="absolute left-20 top-14 rounded-full border border-border bg-card/70 px-4 py-1 text-base font-bold">🛰️ المحاكي 2</Link></>}
           <Field id="meta0" value={hv(0)} onChange={(v) => setH(0, v)} ph="سطر المادة" className="px-4 text-lg text-primary" />
           <Field id="meta1" value={hv(1)} onChange={(v) => setH(1, v)} ph="عنوان الدرس" className="mt-3 px-4 text-4xl font-extrabold md:text-6xl" />
           <div className="mt-6 flex flex-col items-center gap-2 text-lg">

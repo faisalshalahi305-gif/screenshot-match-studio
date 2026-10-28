@@ -15,3 +15,4 @@
 - Every block may carry an optional `fx` style layer (colors, light, shape, position, lock); merged/disassembled templates become a `group` block whose `children` are ordinary blocks/pieces. Why: one universal edit system for all templates with no x/y coordinates.
 - All simulator planets (not only Earth) are real gravity bodies in `Sim.planets`, and Sun mass is a multiplier passed to every physics call. Why: Sun-mass presets must affect every planet consistently.
 - The two-planet experiment is one sequence (`startRace`): gradual divergence, then the race from that same state, then a full stop at `RACE_END_S`. Why: the user merged the two twin options into one.
+- Simulator 2 (/satellite) keeps physics in `src/lib/sat-physics.ts` (km/s units, tested) and live state in the mutable `S2` object; the scene only draws it. Why: same sim/render split as simulator 1 and testable rules.
