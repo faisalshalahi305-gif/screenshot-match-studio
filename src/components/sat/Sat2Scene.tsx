@@ -21,9 +21,23 @@ function CameraRig({ controls }) {
     const s = S2;
     if (goal.current.key !== s.camKey) {
       goal.current.key = s.camKey; goal.current.t = 0;
-      if (s.section === 1) { goal.current.pos.set(0, 6, 40); goal.current.tgt.set(0, 2, 0); }
-      else if (s.cam2 === "scope") { goal.current.pos.set(LIGHT_O.x + 43.2, 0.35, 0); goal.current.tgt.set(LIGHT_O.x, 0, 1.5); }
-      else { goal.current.pos.set(LIGHT_O.x, 62, 34); goal.current.tgt.set(LIGHT_O.x, -2, 3); }
+      const P = goal.current.pos, T = goal.current.tgt, X = LIGHT_O.x;
+      if (s.section === 1) {
+        const m = s.cam1;
+        if (m === "far") { P.set(0, 8, 120); T.set(0, 0, 0); }
+        else if (m === "tilt") { P.set(0, -34, 26); T.set(0, 1, 0); }
+        else if (m === "edge") { P.set(46, 0, 3); T.set(0, 0, 0); }
+        else if (m === "tower") { P.set(3.2, 8.2, 3.5); T.set(0, 6.6, 0); }
+        else if (m === "earth") { P.set(10, 4, 12); T.set(0, 0, 0); }
+        else { P.set(0, 6, 40); T.set(0, 2, 0); }
+      } else {
+        const m = s.cam2;
+        if (m === "scope") { P.set(X + 43.2, 0.35, 0); T.set(X, 0, 1.5); }
+        else if (m === "sun") { P.set(X + 6, 8, 10); T.set(X, 0, 1); }
+        else if (m === "side") { P.set(X, -70, 6); T.set(X, 0, 2); }
+        else if (m === "star") { P.set(X - 52, 3, 2); T.set(X, 0, 1); }
+        else { P.set(X, 62, 34); T.set(X, -2, 3); }
+      }
     }
     if (s.section === 1 && s.follow && s.body) {
       const p = new THREE.Vector3(s.body.x * KM, s.body.y * KM, 0);
