@@ -123,7 +123,7 @@ function SatellitePage() {
             </div>
           )}
           {open === "cam" && (
-            <div className="flex flex-col gap-0.5">
+            <div className="grid max-h-[60vh] grid-cols-2 gap-0.5 overflow-y-auto">
               {s.section === 1 ? (
                 <>
                   {([["front", "المشهد العام"], ["far", "من بعيد"], ["tilt", "منظور مائل"], ["edge", "من الجانب"], ["tower", "فوق البرج"], ["earth", "قرب الأرض"], ["back", "من الخلف"], ["left", "الجانب الآخر"], ["below", "من الأسفل"], ["corner", "زاوية علوية"], ["horizon", "أفق البرج"], ["deep", "الفضاء العميق"]] as [typeof s.cam1, string][]).map(([m, l]) => (
@@ -132,11 +132,12 @@ function SatellitePage() {
                   <button onClick={() => { s.follow = !s.follow; if (!s.follow) s.camKey++; rerender(); }} className={`rounded-full px-3 py-1 text-[11px] transition ${s.follow ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>تتبع القمر</button>
                   <button onClick={() => { s.freeCam = !s.freeCam; s.follow = false; rerender(); }} className={`rounded-full px-3 py-1 text-[11px] transition ${s.freeCam ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>تحكم حر 360°</button>
                 </>
-              ) : (
-                ([["space", "مشهد علوي واسع"], ["side", "من الجانب"], ["sun", "قرب الشمس"], ["star", "من خلف النجم"], ["scope", "تلسكوب الأرض"], ["behindEarth", "خلف الأرض"], ["below", "من الأسفل"], ["corner", "زاوية علوية"], ["grid", "مستوى الشبكة"], ["far", "من بعيد جدًا"]] as [typeof s.cam2, string][]).map(([m, l]) => (
+              ) : (<>
+                {([["space", "مشهد علوي واسع"], ["side", "من الجانب"], ["sun", "قرب الشمس"], ["star", "من خلف النجم"], ["scope", "تلسكوب الأرض"], ["behindEarth", "خلف الأرض"], ["below", "من الأسفل"], ["corner", "زاوية علوية"], ["grid", "مستوى الشبكة"], ["far", "من بعيد جدًا"]] as [typeof s.cam2, string][]).map(([m, l]) => (
                   <button key={m} onClick={() => cam2(m)} className={`rounded-full px-3 py-1 text-[11px] transition ${!s.freeCam && s.cam2 === m ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>{l}</button>
-                ))
-              )}
+                ))}
+                <button onClick={() => { s.freeCam = !s.freeCam; rerender(); }} className={`rounded-full px-3 py-1 text-[11px] transition ${s.freeCam ? "bg-primary text-primary-foreground" : "hover:bg-foreground/10"}`}>تحكم حر 360°</button>
+              </>)}
             </div>
           )}
           {open === "stats" && (
