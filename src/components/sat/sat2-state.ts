@@ -43,7 +43,7 @@ export function lightGeometry(m: number) {
   const zMid = 1.9 + 1.6 * m; // closest pass height above the Sun's centre
   const blocked = zMid < 3.05;
   const z1 = (zMid - starZ * 0.125) / 0.75;
-  const P0 = [-45, starZ], C1 = [-3, z1], C2 = [3, z1], P2 = [45, 0];
+  const P0: [number, number] = [-45, starZ], C1: [number, number] = [-3, z1], C2: [number, number] = [3, z1], P2: [number, number] = [45, 0];
   const curve: [number, number, number][] = [];
   for (let i = 0; i <= 80; i++) {
     const t = i / 80, u = 1 - t;
