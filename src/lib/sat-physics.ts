@@ -20,7 +20,7 @@ export type Body = { x: number; y: number; vx: number; vy: number };
 /** Launch horizontally from the top of the Earth (on +y) at altitude h. */
 export const launch = (hKm: number, vKms: number): Body => ({ x: 0, y: R_EARTH + hKm, vx: vKms, vy: 0 });
 
-const acc = (x: number, y: number, massX: number) => {
+const acc = (x: number, y: number, massX: number): [number, number] => {
   const r2 = x * x + y * y, r = Math.sqrt(r2), k = (-GM_EARTH * massX) / (r2 * r);
   return [k * x, k * y];
 };
